@@ -13,6 +13,7 @@ void printBanner() {
 
 int main() {
     List* myList = createList();
+    loadFromCSV(myList, "Testsortfunction.csv");
     int choice;
 
     while (true) {
@@ -25,6 +26,8 @@ int main() {
         cout << "6. Search by ID\n";
         cout << "7. Search by Name\n";
         cout << "8. Search by GPA\n";
+        cout << "9. Sort Students\n";
+		cout << "10. Export Student Data to PDF\n";	
         cout << "0. Exit Program\n";
         cout << "------------------------------------------\n";
         cout << "Enter your choice: ";
@@ -106,6 +109,22 @@ int main() {
             else
                 cout << "Student not found.\n";
         }
+        
+        // New function
+		else if (choice == 9) {
+		    int sortChoice;
+		    cout << "Sort by:\n";
+		    cout << "1. ID\n";
+			cout << "2. Name\n";
+			cout << "3. GPA\n";
+		    cout << "Choose option: ";
+		    cin >> sortChoice;
+		
+		    if (sortChoice >= 1 && sortChoice <= 3)
+		        sortStudents(myList, sortChoice);
+		    else
+		        cout << "Invalid sort option.\n";
+		}
 
         else if (choice == 0) {
             cout << "Exiting program...\n";

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <sstream> 
 #include <cstring>
 #include "student.h"
 
@@ -128,6 +130,92 @@ void viewStats(List* ls) {
     cout << "Minimum GPA: " << minGPA << endl;
     cout << "Maximum GPA: " << maxGPA << endl;
 }
+
+void loadFromCSV(List* ls, const char* filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Cannot open file: " << filename << "\n";
+        return;
+    }
+
+    string line;
+    getline(file, line); // Skip header line
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string idStr, name, major, yearStr, gpaStr;
+
+        getline(ss, idStr, ',');
+        getline(ss, name, ',');
+        getline(ss, major, ',');
+        getline(ss, yearStr, ',');
+        getline(ss, gpaStr, ',');
+
+        int id = stoi(idStr);
+        int year = stoi(yearStr);
+        float gpa = stof(gpaStr);
+
+        addStudent(ls, id, name.c_str(), major.c_str(), year, gpa);
+    }
+
+    file.close();
+    cout << "Loaded students from CSV.\n";
+}
+
+// merge sort
+Student* mergeSorted(Student* a, Student* b, int mode) {
+    if (!a) return b;
+    if (!b) return a;
+
+    bool useA;
+    if (mode == 1) useA = (a->id < b->id);
+    else if (mode == 2) useA = (strcmp(a->name, b->name) < 0);
+    else useA = (a->gpa > b->gpa);  // GPA descending
+
+    if (useA) {
+        a->next = mergeSorted(a->next, b, mode);
+        return a;
+    } else {
+        b->next = mergeSorted(a, b->next, mode);
+        return b;
+    }
+}
+
+void splitList(Student* source, Student** frontRef, Student** backRef) {
+    Student* slow = source;
+    Student* fast = source->next;
+
+    while (fast && fast->next) {
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = nullptr;
+}
+
+Student* mergeSortList(Student* head, int mode) {
+    if (!head || !head->next)
+        return head;
+
+    Student* a;
+    Student* b;
+    splitList(head, &a, &b);
+
+    a = mergeSortList(a, mode);
+    b = mergeSortList(b, mode);
+
+    return mergeSorted(a, b, mode);
+}
+
+void sortStudents(List* ls, int mode) {
+    ls->head = mergeSortList(ls->head, mode);
+    cout << "Sorted successfully.\n";
+    displayStudent(ls);
+}
+
+
 
 
 

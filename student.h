@@ -24,6 +24,7 @@ Student* searchByID(List*, int);
 Student* searchByName(List*, const char*);
 Student* searchByGPA(List*, float);
 void viewStats(List*);
-
+void loadFromCSV(List*, const char*);
+void sortStudents(List*, int mode);
 #endif
 
